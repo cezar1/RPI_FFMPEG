@@ -1,0 +1,24 @@
+sudo apt-get install build-essential git-core
+sudo git clone https://github.com/raspberrypi/tools.git /opt/tools
+
+#export CCPREFIX="/opt/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-"
+export CCPREFIX="/opt/tools/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin/arm-bcm2708hardfp-linux-gnueabi-"
+
+# Get ffmpeg and x264 repos
+
+git clone git://source.ffmpeg.org/ffmpeg.git
+cd ffmpeg
+git clone git://git.videolan.org/x264
+
+# Build x264
+
+cd x264
+configure --host=arm-linux --cross-prefix=${CCPREFIX} --enable-static --disable-asm
+make
+cd ..
+
+# Build ffmpeg with x264
+
+./configure --enable-cross-compile --cross-prefix=${CCPREFIX} --arch=armel --target-os=linux --enable-gpl --enable-libx264 --extra-cflags="-Ix264/" --extra-ldflags="-ldl -Lx264/"
+make
+
